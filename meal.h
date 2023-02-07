@@ -11,8 +11,12 @@ struct meal {
 	struct ingredient* top;
 }
 
+struct meal* newMeal();
+
 int push(struct meal* meal, struct ingredient* ingredient);
 
 struct meal* pop(struct meal* meal);
+
+int deleteMeal(struct meal* meal);
 
 #endif /* MEAL_H */
