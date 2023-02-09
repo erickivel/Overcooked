@@ -20,16 +20,46 @@ struct meal* newMeal() {
 	return newMeal;
 }
 
-int push(struct meal* meal, struct ingredient* ingredient) {};
+// Push
+int addIngredient(struct meal* meal, char value) {
+	struct ingredient* ing = createIngredient(value);
+	
+	if (meal->size == 0)	{
+		meal->top = ing;
+		meal->size = 1;
+		return 1;
+	}
 
-struct meal* pop(struct meal* meal) {};
+	struct ingredient* oldTop = meal->top;
+	meal->top = ing;
+	ing->next = oldTop;
+	meal->size += 1;
+
+	return 1;
+};
+
+// Pop
+struct ingredient* removeIngredient(struct meal* meal) {
+	if (meal->size == 0) 
+		return NULL;
+
+	struct ingredient* ing = meal->top;
+	meal->top = meal->top->next;
+	meal->size -= 1;
+
+	return ing;
+};
+
+int deliverMeal(struct meal* meal) {
+	
+}
 
 int deleteMeal(struct meal* meal) {
 	struct ingredient* lastIngredient = meal->top;
 	struct ingredient* currentIngredient = meal->top;
 
 	while (lastIngredient != NULL) {
-		free(lastIngredient):
+		free(lastIngredient);
 		lastIngredient
 	}
 };

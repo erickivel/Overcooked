@@ -4,18 +4,18 @@
 struct ingredient {
 	char val;
 	struct ingredient* next;
-}
+};
 
 struct meal {
 	int size;
 	struct ingredient* top;
-}
+};
 
 struct meal* newMeal();
 
-int push(struct meal* meal, struct ingredient* ingredient);
+int addIngredient(struct meal* meal, char val);
 
-struct meal* pop(struct meal* meal);
+struct ingredient* removeIngredient(struct meal* meal);
 
 int deleteMeal(struct meal* meal);
 

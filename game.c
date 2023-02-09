@@ -3,15 +3,23 @@
 
 #include"game.h"
 #include"screen.h"
+#include"meal.h"
 
 struct game* createGame() {
 	struct game* newGame = malloc(sizeof *newGame);
 	newGame->score = 0;
 	newGame->map = createMap();
-	newGame->character = malloc(sizeof(struct character));
+	newGame->character = createCharacter();
 	//newGame->order = createOrder();
 
 	return newGame;
+}
+
+void refreshScreen(struct game* game) {
+	erase();
+	printMap(game->map);
+	printCharacterMeal(game->character->meal);
+	refresh();
 }
 
 int initGame(struct game* game) {
@@ -19,7 +27,6 @@ int initGame(struct game* game) {
 	noecho();
 	curs_set(0);
 
-	printMap(game->map);
 
 	int maxX = game->map->maxX;
 	int maxY = game->map->maxY;
@@ -37,7 +44,7 @@ int initGame(struct game* game) {
 }
 
 // If has collision return 1, otherwise return 0
-int handleCollision(char nextPosition) {
+int handleCollision(struct character* character, char nextPosition) {
 	switch (nextPosition) {
 		case ' ':
 			return 0;
@@ -50,8 +57,31 @@ int handleCollision(char nextPosition) {
 		case '-':
 			return 1;
 		case '@':
+			deliverMeal(character->meal);
 			return 1;
 		case 'o':
+			deleteMeal(character->meal);
+			return 1;
+		case 'H':
+			addIngredient(character->meal, 'H');
+			return 1;
+		case 'p':
+			addIngredient(character->meal, 'p');
+			return 1;
+		case 'P':
+			addIngredient(character->meal, 'P');
+			return 1;
+		case 'Q':
+			addIngredient(character->meal, 'Q');
+			return 1;
+		case 'S':
+			addIngredient(character->meal, 'S');
+			return 1;
+		case 'F':
+			addIngredient(character->meal, 'F');
+			return 1;
+		case 'R':
+			addIngredient(character->meal, 'R');
 			return 1;
 		default:
 			return 0;
@@ -64,28 +94,28 @@ void interpretInput(struct game* game, char userInput) {
 
 	switch(userInput) {
 		case 'w':
-			if (!handleCollision(game->map->matrix[posY-1][posX])) {
+			if (!handleCollision(game->character, game->map->matrix[posY-1][posX])) {
 				game->map->matrix[posY][posX] = ' ';
 				game->map->matrix[posY-1][posX] = '&';
 				game->character->posY--;
 			}
 			break;
 		case 'a':
-			if (!handleCollision(game->map->matrix[posY][posX-1])) {
+			if (!handleCollision(game->character, game->map->matrix[posY][posX-1])) {
 				game->map->matrix[posY][posX] = ' ';
 				game->map->matrix[posY][posX-1] = '&';
 				game->character->posX--;
 			}
 			break;
 		case 's':
-			if (!handleCollision(game->map->matrix[posY+1][posX])) {
+			if (!handleCollision(game->character, game->map->matrix[posY+1][posX])) {
 				game->map->matrix[posY][posX] = ' ';
 				game->map->matrix[posY+1][posX] = '&';
 				game->character->posY++;
 			}
 			break;
 		case 'd':
-			if (!handleCollision(game->map->matrix[posY][posX+1])) {
+			if (!handleCollision(game->character, game->map->matrix[posY][posX+1])) {
 				game->map->matrix[posY][posX] = ' ';
 				game->map->matrix[posY][posX+1] = '&';
 				game->character->posX++;
@@ -94,15 +124,15 @@ void interpretInput(struct game* game, char userInput) {
 		defaut:
 			break;
 	}
-
-	printMap(game->map);
 }
 
 int runGame(struct game* game) {
+	refreshScreen(game);
 	char userInput = getch(); 
 
 	while(userInput != 'q') {
 		interpretInput(game, userInput);
+		refreshScreen(game);
 		userInput = getch(); 
 	}
 
