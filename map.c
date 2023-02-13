@@ -18,23 +18,23 @@ int readMapFile(struct map *map) {
   if (err == 1)
     return 0;
 
-  fgetc(file); // remove new line
+  (void)fgetc(file); // remove new line
 
   int maxX = map->maxX;
   int maxY = map->maxY;
 
-  map->matrix = (char **)malloc(maxY * sizeof(char *));
+  map->matrix = malloc(maxY * sizeof(char *));
   if (map->matrix == 0)
     return 0;
   for (int lin = 0; lin < maxY; lin++) {
-    map->matrix[lin] = (char *)malloc(maxX * sizeof(char));
+    map->matrix[lin] = malloc(maxX * sizeof(char));
     if (map->matrix[lin] == 0)
       return 0;
   }
 
   for (int line = 0; line < maxY; line++) {
-    fgets(map->matrix[line], maxX + 1, file);
-    fgetc(file); // remove new line
+    (void)fgets(map->matrix[line], maxX + 1, file);
+    (void)fgetc(file); // remove new line
   }
 
   fclose(file);
@@ -53,6 +53,15 @@ struct map *createMap() {
   }
 
   return newMap;
-};
+}
 
-int endMap(struct map *map) { return 1; }
+int endMap(struct map *map) {
+  for (int i = 0; i < map->maxY; i++) {
+    free(map->matrix[i]);
+  }
+
+  free(map->matrix);
+  free(map);
+
+  return 1;
+}

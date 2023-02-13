@@ -22,6 +22,6 @@ void pushOrder(struct orderQueue *queue, struct order *order);
 
 int popOrder(struct orderQueue *queue);
 
-void deleteOrderQueue(struct orderQueue *queue);
+void endOrders(struct orderQueue *queue);
 
 #endif /* ORDER_H */

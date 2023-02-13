@@ -67,3 +67,8 @@ int trashMeal(struct character *character) {
 
   return 1;
 }
+
+void endCharacter(struct character *character) {
+  deleteMeal(character->meal);
+  free(character);
+}

@@ -19,4 +19,6 @@ int deliverMeal(struct character *character, struct orderQueue *orders);
 
 int trashMeal(struct character *character);
 
+void endCharacter(struct character *character);
+
 #endif /* CHARACTER_H */

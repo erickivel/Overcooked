@@ -83,4 +83,19 @@ void populateOrderQueue(struct orderQueue *queue, int num) {
   }
 }
 
-void deleteOrderQueue(struct orderQueue *queue) { free(queue); }
+void auxEndOrders(struct order *order) {
+  if (order == NULL)
+    return;
+
+  auxEndOrders(order->next);
+  deleteMeal(order->meal);
+  free(order);
+}
+
+void endOrders(struct orderQueue *queue) {
+  struct order *firstOrder = queue->firstOrder;
+
+  auxEndOrders(firstOrder);
+
+  free(queue);
+}

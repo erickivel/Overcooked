@@ -155,9 +155,10 @@ int endGame(struct game *game) {
   printEndGame(game);
 
   endMap(game->map);
-  // endCharacter(game->character);
-  // endOrder(game->order);
+  endCharacter(game->character);
+  endOrders(game->orders);
 
+  free(game);
   endwin();
 
   return 1;
