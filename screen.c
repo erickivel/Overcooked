@@ -2,6 +2,11 @@
 
 #include "screen.h"
 
+void printScore(struct character *character) {
+  printw("Lifes: %d    Score: %d", character->lifes, character->score);
+  printw("\n\n");
+}
+
 void printMap(struct map *map) {
   for (int i = 0; i < map->maxY; i++) {
     for (int j = 0; j < map->maxX; j++) {
@@ -20,8 +25,9 @@ void auxPrintCharacterMeal(struct ingredient *ing) {
   printw("[%c] ", ing->val);
 }
 
-void printCharacterMeal(struct meal *meal) {
+void printCharacterMeal(struct character *character) {
   printw("Ingredients:\n");
+  struct meal *meal = character->meal;
   struct ingredient *ing = meal->top;
 
   auxPrintCharacterMeal(ing);
@@ -29,7 +35,7 @@ void printCharacterMeal(struct meal *meal) {
   printw("\n\n");
 }
 
-char mealNames[6][11] = {
+char mealNames[6][12] = {
     {"X-burguer"}, {"X-salada"},    {"Combo 1"},
     {"Combo 2"},   {"Vegetariano"}, {"Vegano"},
 };
@@ -57,4 +63,17 @@ void printRecipes() {
   printw("Combo 2     [p] [H] [S] [P] [F] [R]\n");
   printw("Vegetariano [p] [Q] [P] [F] [R]\n");
   printw("Vegano      [S] [F] [R]\n");
+}
+
+void printEndGame(struct game *game) {
+  erase();
+
+  printw("Score: %d\n", game->character->score);
+  printw("Meals successfully delivered: %d\n", game->character->mealsDelivered);
+
+  printw("Press any key to leave the game\n");
+
+  refresh();
+
+  getch();
 }

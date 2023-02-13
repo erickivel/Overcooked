@@ -1,4 +1,5 @@
-#include "stdlib.h"
+#include <stdlib.h>
+#include <time.h>
 
 #include "meal.h"
 
@@ -40,11 +41,13 @@ int addIngredient(struct meal *meal, char value) {
 }
 
 struct meal *createRandomMeal() {
-  int randNum = rand() % 5;
+  srand(clock());
+
+  // int randNum = rand() % 5;
 
   struct meal *meal = newMeal();
 
-  switch (randNum) {
+  switch (rand() % 6) {
   // X-burguer
   case 0:
     addIngredient(meal, 'p');
@@ -114,39 +117,19 @@ struct ingredient *removeIngredient(struct meal *meal) {
   return ing;
 }
 
-void removeIngredients(struct ingredient *ing) {
+void removeAllIngredients(struct ingredient *ing) {
   if (ing == NULL)
     return;
 
   ing = ing->next;
-  removeIngredients(ing);
+  removeAllIngredients(ing);
   free(ing);
-}
-
-int deliverMeal(struct meal *meal) {
-  struct ingredient *topIngredient = meal->top;
-
-  removeIngredients(topIngredient);
-  meal->size = 0;
-  meal->top = NULL;
-
-  return 1;
-}
-
-int trashMeal(struct meal *meal) {
-  struct ingredient *topIngredient = meal->top;
-
-  removeIngredients(topIngredient);
-  meal->size = 0;
-  meal->top = NULL;
-
-  return 1;
 }
 
 int deleteMeal(struct meal *meal) {
   struct ingredient *topIngredient = meal->top;
 
-  removeIngredients(topIngredient);
+  removeAllIngredients(topIngredient);
   free(meal);
 
   return 1;

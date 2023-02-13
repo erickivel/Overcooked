@@ -1,6 +1,6 @@
 #include <stdlib.h>
 
-#include "game.h"
+#include "meal.h"
 #include "order.h"
 
 int clientId = 1;
@@ -57,17 +57,19 @@ int popOrder(struct orderQueue *queue) {
   if (queue->size == 0)
     return 0;
 
-  struct order *oldLastOrder = queue->lastOrder;
+  struct order *oldFirstOrder = queue->firstOrder;
 
   if (queue->size == 1) {
     queue->size = 0;
+    queue->firstOrder = NULL;
+    queue->lastOrder = NULL;
   } else {
-    queue->lastOrder = oldLastOrder->prev;
+    queue->firstOrder = oldFirstOrder->next;
     queue->size -= 1;
   }
 
-  deleteMeal(oldLastOrder->meal);
-  free(oldLastOrder);
+  deleteMeal(oldFirstOrder->meal);
+  free(oldFirstOrder);
 
   return 1;
 }

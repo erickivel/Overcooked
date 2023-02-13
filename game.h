@@ -1,12 +1,12 @@
+#include "character.h"
+#include "map.h"
+#include "meal.h"
+#include "order.h"
+
 #ifndef GAME_H
 #define GAME_H
 
-#include "character.h"
-#include "map.h"
-#include "order.h"
-
 struct game {
-  int score;
   struct map *map;
   struct character *character;
   struct orderQueue *orders;

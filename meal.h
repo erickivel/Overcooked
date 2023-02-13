@@ -1,3 +1,5 @@
+#include "order.h"
+
 #ifndef MEAL_H
 #define MEAL_H
 
@@ -20,9 +22,7 @@ int addIngredient(struct meal *meal, char val);
 
 struct ingredient *removeIngredient(struct meal *meal);
 
-int deliverMeal(struct meal *meal);
-
-int trashMeal(struct meal *meal);
+void removeAllIngredients(struct ingredient *ing);
 
 int deleteMeal(struct meal *meal);
 

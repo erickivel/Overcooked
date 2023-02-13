@@ -1,28 +1,24 @@
 #include <ncurses.h>
 #include <stdlib.h>
-#include <time.h>
 
 #include "game.h"
-#include "meal.h"
 #include "screen.h"
 
 struct game *createGame() {
   struct game *newGame = malloc(sizeof *newGame);
-  newGame->score = 0;
   newGame->map = createMap();
   newGame->character = createCharacter();
   newGame->orders = createOrderQueue();
   populateOrderQueue(newGame->orders, 5);
-
-  srand(time(NULL));
 
   return newGame;
 }
 
 void refreshScreen(struct game *game) {
   erase();
+  printScore(game->character);
   printMap(game->map);
-  printCharacterMeal(game->character->meal);
+  printCharacterMeal(game->character);
   printOrders(game->orders);
   printRecipes();
   refresh();
@@ -49,7 +45,8 @@ int initGame(struct game *game) {
 }
 
 // If has collision return 1, otherwise return 0
-int handleCollision(struct character *character, char nextPosition) {
+int handleCollision(struct character *character, struct orderQueue *orders,
+                    char nextPosition) {
   switch (nextPosition) {
   case ' ':
     return 0;
@@ -62,10 +59,10 @@ int handleCollision(struct character *character, char nextPosition) {
   case '-':
     return 1;
   case '@':
-    deliverMeal(character->meal);
+    deliverMeal(character, orders);
     return 1;
   case 'o':
-    trashMeal(character->meal);
+    trashMeal(character);
     return 1;
   case 'H':
     addIngredient(character->meal, 'H');
@@ -93,34 +90,41 @@ int handleCollision(struct character *character, char nextPosition) {
   }
 }
 
-void interpretInput(struct game *game, char userInput) {
+void handleInput(struct game *game, char userInput) {
   int posX = game->character->posX;
   int posY = game->character->posY;
 
+  struct character *character = game->character;
+  struct orderQueue *orders = game->orders;
+
   switch (userInput) {
   case 'w':
-    if (!handleCollision(game->character, game->map->matrix[posY - 1][posX])) {
+    if (!handleCollision(character, orders,
+                         game->map->matrix[posY - 1][posX])) {
       game->map->matrix[posY][posX] = ' ';
       game->map->matrix[posY - 1][posX] = '&';
       game->character->posY--;
     }
     break;
   case 'a':
-    if (!handleCollision(game->character, game->map->matrix[posY][posX - 1])) {
+    if (!handleCollision(character, orders,
+                         game->map->matrix[posY][posX - 1])) {
       game->map->matrix[posY][posX] = ' ';
       game->map->matrix[posY][posX - 1] = '&';
       game->character->posX--;
     }
     break;
   case 's':
-    if (!handleCollision(game->character, game->map->matrix[posY + 1][posX])) {
+    if (!handleCollision(character, orders,
+                         game->map->matrix[posY + 1][posX])) {
       game->map->matrix[posY][posX] = ' ';
       game->map->matrix[posY + 1][posX] = '&';
       game->character->posY++;
     }
     break;
   case 'd':
-    if (!handleCollision(game->character, game->map->matrix[posY][posX + 1])) {
+    if (!handleCollision(character, orders,
+                         game->map->matrix[posY][posX + 1])) {
       game->map->matrix[posY][posX] = ' ';
       game->map->matrix[posY][posX + 1] = '&';
       game->character->posX++;
@@ -133,8 +137,13 @@ int runGame(struct game *game) {
   refreshScreen(game);
   char userInput = getch();
 
-  while (userInput != 'q') {
-    interpretInput(game, userInput);
+  while (userInput != 'q' && game->character->lifes > 0) {
+    handleInput(game, userInput);
+
+    if (game->orders->size == 0) {
+      populateOrderQueue(game->orders, 5);
+    }
+
     refreshScreen(game);
     userInput = getch();
   }
@@ -143,6 +152,8 @@ int runGame(struct game *game) {
 }
 
 int endGame(struct game *game) {
+  printEndGame(game);
+
   endMap(game->map);
   // endCharacter(game->character);
   // endOrder(game->order);
