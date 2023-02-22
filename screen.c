@@ -13,13 +13,14 @@ void printWelcome() {
   printw("\n\nPress any key to start\n");
 }
 
-void printScore(struct character *character) {
-  printw("Lifes: %d    Score: %d", character->lifes, character->score);
+void printScore(struct character *character, int time) {
+  printw("Lifes: %d    Score: %d  Time: %d s", character->lifes, character->score, time);
   printw("\n\n");
 }
 
 void printMap(struct map *map) {
   for (int i = 0; i < map->maxY; i++) {
+    printw("\t");
     for (int j = 0; j < map->maxX; j++) {
       printw("%c", map->matrix[i][j]);
     }

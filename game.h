@@ -10,6 +10,8 @@ struct game {
   struct map *map;
   struct character *character;
   struct orderQueue *orders;
+	int maxTime;
+	int timeLeft;
 };
 
 struct game *createGame();

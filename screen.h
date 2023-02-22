@@ -5,7 +5,7 @@
 
 void printWelcome();
 
-void printScore(struct character *character);
+void printScore(struct character *character, int time);
 
 void printMap(struct map *map);
 

@@ -1,5 +1,6 @@
 #include <ncurses.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include "game.h"
 #include "screen.h"
@@ -9,6 +10,8 @@ struct game *createGame() {
   newGame->map = createMap();
   newGame->character = createCharacter();
   newGame->orders = createOrderQueue();
+	newGame->maxTime = 25;
+	newGame->timeLeft = 25;
   populateOrderQueue(newGame->orders, 5);
 
   return newGame;
@@ -16,7 +19,7 @@ struct game *createGame() {
 
 void refreshScreen(struct game *game) {
   erase();
-  printScore(game->character);
+  printScore(game->character, game->timeLeft);
   printMap(game->map);
   printCharacterMeal(game->character);
   printOrders(game->orders);
@@ -151,16 +154,24 @@ int runGame(struct game *game) {
   refreshScreen(game);
   int userInput = getch();
 
-  while (userInput != 'q' && game->character->lifes > 0) {
+	//
+	int startTime = clock(); 
+	//
+
+	timeout(0);
+  while (userInput != 'q' && game->character->lifes > 0 && game->timeLeft > 0) {
     handleInput(game, userInput);
 
     if (game->orders->size == 0) {
       populateOrderQueue(game->orders, 5);
     }
 
+		clock_t currentTime = clock();
+		game->timeLeft = game->maxTime - ((currentTime - startTime) / (CLOCKS_PER_SEC));
     refreshScreen(game);
     userInput = getch();
   }
+	timeout(-1);
 
   return 1;
 }
