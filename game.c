@@ -26,6 +26,7 @@ void refreshScreen(struct game *game) {
 
 int initGame(struct game *game) {
   initscr();
+  keypad(stdscr, TRUE);
   noecho();
   curs_set(0);
 
@@ -40,6 +41,11 @@ int initGame(struct game *game) {
       }
     }
   }
+
+  erase();
+  printWelcome();
+  refresh();
+  getch();
 
   return 1;
 }
@@ -90,7 +96,7 @@ int handleCollision(struct character *character, struct orderQueue *orders,
   }
 }
 
-void handleInput(struct game *game, char userInput) {
+void handleInput(struct game *game, int userInput) {
   int posX = game->character->posX;
   int posY = game->character->posY;
 
@@ -98,7 +104,9 @@ void handleInput(struct game *game, char userInput) {
   struct orderQueue *orders = game->orders;
 
   switch (userInput) {
+  case 'W':
   case 'w':
+  case KEY_UP:
     if (!handleCollision(character, orders,
                          game->map->matrix[posY - 1][posX])) {
       game->map->matrix[posY][posX] = ' ';
@@ -106,7 +114,9 @@ void handleInput(struct game *game, char userInput) {
       game->character->posY--;
     }
     break;
+  case 'A':
   case 'a':
+  case KEY_LEFT:
     if (!handleCollision(character, orders,
                          game->map->matrix[posY][posX - 1])) {
       game->map->matrix[posY][posX] = ' ';
@@ -114,7 +124,9 @@ void handleInput(struct game *game, char userInput) {
       game->character->posX--;
     }
     break;
+  case 'S':
   case 's':
+  case KEY_DOWN:
     if (!handleCollision(character, orders,
                          game->map->matrix[posY + 1][posX])) {
       game->map->matrix[posY][posX] = ' ';
@@ -122,7 +134,9 @@ void handleInput(struct game *game, char userInput) {
       game->character->posY++;
     }
     break;
+  case 'D':
   case 'd':
+  case KEY_RIGHT:
     if (!handleCollision(character, orders,
                          game->map->matrix[posY][posX + 1])) {
       game->map->matrix[posY][posX] = ' ';
@@ -135,7 +149,7 @@ void handleInput(struct game *game, char userInput) {
 
 int runGame(struct game *game) {
   refreshScreen(game);
-  char userInput = getch();
+  int userInput = getch();
 
   while (userInput != 'q' && game->character->lifes > 0) {
     handleInput(game, userInput);

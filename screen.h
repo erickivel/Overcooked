@@ -3,6 +3,8 @@
 #ifndef SCREEN_H
 #define SCREEN_H
 
+void printWelcome();
+
 void printScore(struct character *character);
 
 void printMap(struct map *map);

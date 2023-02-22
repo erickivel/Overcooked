@@ -6,7 +6,7 @@ struct character *createCharacter() {
   struct character *newCharacter = malloc(sizeof(struct character));
 
   newCharacter->mealsDelivered = 0;
-  newCharacter->lifes = 3;
+  newCharacter->lifes = 5;
   newCharacter->score = 0;
 
   newCharacter->meal = newMeal();
@@ -37,7 +37,7 @@ int deliverMeal(struct character *character, struct orderQueue *orders) {
   }
 
   if (isWrongMeal) {
-    character->lifes--;
+    character->lifes -= 2;
     character->score -= 10;
   } else {
     character->mealsDelivered += 1;
@@ -64,6 +64,7 @@ int trashMeal(struct character *character) {
   meal->top = NULL;
 
   character->score -= 10;
+  character->lifes -= 1;
 
   return 1;
 }

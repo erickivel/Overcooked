@@ -27,7 +27,7 @@ int readMapFile(struct map *map) {
   if (map->matrix == 0)
     return 0;
   for (int lin = 0; lin < maxY; lin++) {
-    map->matrix[lin] = malloc(maxX * sizeof(char));
+    map->matrix[lin] = malloc(maxX * sizeof(char) + 1);
     if (map->matrix[lin] == 0)
       return 0;
   }

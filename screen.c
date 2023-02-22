@@ -2,6 +2,17 @@
 
 #include "screen.h"
 
+void printWelcome() {
+  printw("\n\n _    _           _                          _            _ \n");
+  printw("| |  | |         | |                        | |          | |\n");
+  printw("| |  | |_ __   __| | ___ _ __ ___ ___   ___ | | _____  __| |\n");
+  printw("| |  | | '_ \\ / _` |/ _ \\ '__/ __/ _ \\ / _ \\| |/ / _ \\/ _` |\n");
+  printw("| |__| | | | | (_| |  __/ | | (_| (_) | (_) |   <  __/ (_| |\n");
+  printw(" \\____/|_| |_|\\__,_|\\___|_|  \\___\\___/ "
+         "\\___/|_|\\_\\___|\\__,_|\n");
+  printw("\n\nPress any key to start\n");
+}
+
 void printScore(struct character *character) {
   printw("Lifes: %d    Score: %d", character->lifes, character->score);
   printw("\n\n");
@@ -67,6 +78,12 @@ void printRecipes() {
 
 void printEndGame(struct game *game) {
   erase();
+
+  printw(" ____                        ___         \n");
+  printw("/ ___|  __ _ _ __ ___   ___ / _ \\__   _____ _ __ \n");
+  printw("| |  _ / _` | '_ ` _ \\ / _ \\ | | \\ \\ / / _ \\ '__|\n");
+  printw("| |_| | (_| | | | | | |  __/ |_| |\\ V /  __/ |   \n");
+  printw(" \\____|\\__,_|_| |_| |_|\\___|\\___/  \\_/ \\___|_|   \n\n");
 
   printw("Score: %d\n", game->character->score);
   printw("Meals successfully delivered: %d\n", game->character->mealsDelivered);

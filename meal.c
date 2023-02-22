@@ -121,8 +121,7 @@ void removeAllIngredients(struct ingredient *ing) {
   if (ing == NULL)
     return;
 
-  ing = ing->next;
-  removeAllIngredients(ing);
+  removeAllIngredients(ing->next);
   free(ing);
 }
 
