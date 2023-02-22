@@ -4,8 +4,8 @@
 
 #include "map.h"
 
-int readMapFile(struct map *map) {
-  FILE *file = fopen("map.txt", "r");
+int readMapFile(struct map *map, char *mapPath) {
+  FILE *file = fopen(mapPath, "r");
 
   if (!file) {
     printf("file can't be opened \n");
@@ -42,10 +42,10 @@ int readMapFile(struct map *map) {
   return 1;
 }
 
-struct map *createMap() {
+struct map *createMap(char *mapPath) {
   struct map *newMap = malloc(sizeof *newMap);
 
-  int resReadMapFile = readMapFile(newMap);
+  int resReadMapFile = readMapFile(newMap, mapPath);
 
   if (!resReadMapFile) {
     printf("Erro ao ler o arquivo do mapa\n");

@@ -1,6 +1,6 @@
 TARGET  = overcooked
 
-SRCDIRS = .
+SRCDIRS = ./src/
 INCDIRS = ./include/
 
 CC			= gcc

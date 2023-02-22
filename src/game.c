@@ -5,13 +5,13 @@
 #include "game.h"
 #include "screen.h"
 
-struct game *createGame() {
+struct game *createGame(char *mapPath) {
   struct game *newGame = malloc(sizeof *newGame);
-  newGame->map = createMap();
+  newGame->map = createMap(mapPath);
   newGame->character = createCharacter();
   newGame->orders = createOrderQueue();
-	newGame->maxTime = 25;
-	newGame->timeLeft = 25;
+  newGame->maxTime = 25;
+  newGame->timeLeft = 25;
   populateOrderQueue(newGame->orders, 5);
 
   return newGame;
@@ -22,8 +22,8 @@ void refreshScreen(struct game *game) {
   printScore(game->character, game->timeLeft);
   printMap(game->map);
   printCharacterMeal(game->character);
-  printOrders(game->orders);
   printRecipes();
+  printOrders(game->orders);
   refresh();
 }
 
@@ -45,17 +45,22 @@ int initGame(struct game *game) {
     }
   }
 
-  erase();
   printWelcome();
-  refresh();
   getch();
 
   return 1;
 }
 
+void resetTimer(struct game *game) {
+  game->startTime = clock();
+  game->timeLeft = game->maxTime;
+}
+
 // If has collision return 1, otherwise return 0
-int handleCollision(struct character *character, struct orderQueue *orders,
-                    char nextPosition) {
+int handleCollision(struct game *game, char nextPosition) {
+  struct character *character = game->character;
+  struct orderQueue *orders = game->orders;
+
   switch (nextPosition) {
   case ' ':
     return 0;
@@ -68,7 +73,8 @@ int handleCollision(struct character *character, struct orderQueue *orders,
   case '-':
     return 1;
   case '@':
-    deliverMeal(character, orders);
+    if (character->meal->size > 0 && deliverMeal(character, orders))
+      game->startTime = game->startTime + (15*CLOCKS_PER_SEC);
     return 1;
   case 'o':
     trashMeal(character);
@@ -103,15 +109,11 @@ void handleInput(struct game *game, int userInput) {
   int posX = game->character->posX;
   int posY = game->character->posY;
 
-  struct character *character = game->character;
-  struct orderQueue *orders = game->orders;
-
   switch (userInput) {
   case 'W':
   case 'w':
   case KEY_UP:
-    if (!handleCollision(character, orders,
-                         game->map->matrix[posY - 1][posX])) {
+    if (!handleCollision(game, game->map->matrix[posY - 1][posX])) {
       game->map->matrix[posY][posX] = ' ';
       game->map->matrix[posY - 1][posX] = '&';
       game->character->posY--;
@@ -120,8 +122,7 @@ void handleInput(struct game *game, int userInput) {
   case 'A':
   case 'a':
   case KEY_LEFT:
-    if (!handleCollision(character, orders,
-                         game->map->matrix[posY][posX - 1])) {
+    if (!handleCollision(game, game->map->matrix[posY][posX - 1])) {
       game->map->matrix[posY][posX] = ' ';
       game->map->matrix[posY][posX - 1] = '&';
       game->character->posX--;
@@ -130,8 +131,7 @@ void handleInput(struct game *game, int userInput) {
   case 'S':
   case 's':
   case KEY_DOWN:
-    if (!handleCollision(character, orders,
-                         game->map->matrix[posY + 1][posX])) {
+    if (!handleCollision(game, game->map->matrix[posY + 1][posX])) {
       game->map->matrix[posY][posX] = ' ';
       game->map->matrix[posY + 1][posX] = '&';
       game->character->posY++;
@@ -140,8 +140,7 @@ void handleInput(struct game *game, int userInput) {
   case 'D':
   case 'd':
   case KEY_RIGHT:
-    if (!handleCollision(character, orders,
-                         game->map->matrix[posY][posX + 1])) {
+    if (!handleCollision(game, game->map->matrix[posY][posX + 1])) {
       game->map->matrix[posY][posX] = ' ';
       game->map->matrix[posY][posX + 1] = '&';
       game->character->posX++;
@@ -154,24 +153,31 @@ int runGame(struct game *game) {
   refreshScreen(game);
   int userInput = getch();
 
-	//
-	int startTime = clock(); 
-	//
+  game->startTime = clock();
 
-	timeout(0);
+  timeout(0);
   while (userInput != 'q' && game->character->lifes > 0 && game->timeLeft > 0) {
     handleInput(game, userInput);
 
     if (game->orders->size == 0) {
       populateOrderQueue(game->orders, 5);
+      game->maxTime -= 3;
     }
 
-		clock_t currentTime = clock();
-		game->timeLeft = game->maxTime - ((currentTime - startTime) / (CLOCKS_PER_SEC));
+    clock_t currentTime = clock();
+    game->timeLeft =
+        game->maxTime - ((currentTime - game->startTime) / (CLOCKS_PER_SEC));
+
+    if (game->timeLeft == 0) {
+      game->character->lifes -= 2;
+      game->character->score -= 10;
+      popOrder(game->orders);
+      resetTimer(game);
+    }
     refreshScreen(game);
     userInput = getch();
   }
-	timeout(-1);
+  timeout(-1);
 
   return 1;
 }

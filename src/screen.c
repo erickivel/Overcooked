@@ -3,6 +3,7 @@
 #include "screen.h"
 
 void printWelcome() {
+  erase();
   printw("\n\n _    _           _                          _            _ \n");
   printw("| |  | |         | |                        | |          | |\n");
   printw("| |  | |_ __   __| | ___ _ __ ___ ___   ___ | | _____  __| |\n");
@@ -11,10 +12,13 @@ void printWelcome() {
   printw(" \\____/|_| |_|\\__,_|\\___|_|  \\___\\___/ "
          "\\___/|_|\\_\\___|\\__,_|\n");
   printw("\n\nPress any key to start\n");
+  refresh();
 }
 
 void printScore(struct character *character, int time) {
-  printw("Lifes: %d    Score: %d  Time: %d s", character->lifes, character->score, time);
+  printw("\n");
+  printw("Lifes: %d    Score: %d  Time: %d s", character->lifes,
+         character->score, time);
   printw("\n\n");
 }
 
@@ -60,11 +64,12 @@ void printOrders(struct orderQueue *queue) {
     printw("[Cliente %d | %s]", order->clientId, mealNames[order->meal->id]);
     if (order->next)
       printw(" -> ");
+    printw("\n");
 
     order = order->next;
   }
 
-  printw("\n\n");
+  printw("\n");
 }
 
 void printRecipes() {
@@ -75,6 +80,7 @@ void printRecipes() {
   printw("Combo 2     [p] [H] [S] [P] [F] [R]\n");
   printw("Vegetariano [p] [Q] [P] [F] [R]\n");
   printw("Vegano      [S] [F] [R]\n");
+  printw("\n");
 }
 
 void printEndGame(struct game *game) {
@@ -89,7 +95,7 @@ void printEndGame(struct game *game) {
   printw("Score: %d\n", game->character->score);
   printw("Meals successfully delivered: %d\n", game->character->mealsDelivered);
 
-  printw("Press any key to leave the game\n");
+  printw("\nPress any key to leave the game\n");
 
   refresh();
 

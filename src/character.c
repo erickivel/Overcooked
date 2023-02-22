@@ -49,7 +49,7 @@ int deliverMeal(struct character *character, struct orderQueue *orders) {
   characterMeal->size = 0;
   characterMeal->top = NULL;
 
-  return 1;
+  return !isWrongMeal;
 }
 
 int trashMeal(struct character *character) {
