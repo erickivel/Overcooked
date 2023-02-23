@@ -3,6 +3,8 @@
 
 #include "meal.h"
 
+#define MAX_SIZE 10
+
 struct ingredient *createIngredient(char val) {
   struct ingredient *newIngredient = malloc(sizeof(struct ingredient));
 
@@ -25,6 +27,10 @@ struct meal *newMeal() {
 // Push
 int addIngredient(struct meal *meal, char value) {
   struct ingredient *ing = createIngredient(value);
+
+  if (meal->size == MAX_SIZE) {
+    return 1;
+  }
 
   if (meal->size == 0) {
     meal->top = ing;

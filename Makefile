@@ -1,4 +1,4 @@
-TARGET  = overcooked
+TARGET  = undercooked
 
 SRCDIRS = ./src/
 INCDIRS = ./include/
