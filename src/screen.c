@@ -2,6 +2,20 @@
 
 #include "screen.h"
 
+void printMode(int mode) {
+  erase();
+  printw("\n\t SELECT GAME MODE\n\n");
+  if (mode == -1) {
+    printw("\t-> NORMAL MODE <-\n");
+    printw("\t   SECRET MODE\n");
+  } else if (mode == 1) {
+    printw("\t   NORMAL MODE \n");
+    printw("\t-> SECRET MODE <-\n");
+  }
+  printw("\nMove with the arrows and select with SPACE");
+  refresh();
+}
+
 void printWelcome() {
   erase();
   printw("\n\n _    _           _                          _            _ \n");
@@ -15,9 +29,9 @@ void printWelcome() {
   refresh();
 }
 
-void printScore(struct character *character, int time) {
+void printScore(int lifes, struct character *character, int time) {
   printw("\n");
-  printw("Lifes: %d    Score: %d  Time: %d s", character->lifes,
+  printw("Lifes: %d    Score: %d  Time: %d s", lifes,
          character->score, time);
   printw("\n\n");
 }

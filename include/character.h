@@ -5,6 +5,7 @@
 #define CHARACTER_H
 
 struct character {
+  char skin;
   int posX;
   int posY;
   int lifes;
@@ -13,7 +14,7 @@ struct character {
   struct meal *meal;
 };
 
-struct character *createCharacter();
+struct character *createCharacter(char skin);
 
 int deliverMeal(struct character *character, struct orderQueue *orders);
 

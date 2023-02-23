@@ -41,10 +41,6 @@ int addIngredient(struct meal *meal, char value) {
 }
 
 struct meal *createRandomMeal() {
-  srand(clock());
-
-  // int randNum = rand() % 5;
-
   struct meal *meal = newMeal();
 
   switch (rand() % 6) {

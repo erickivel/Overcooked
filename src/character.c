@@ -2,11 +2,13 @@
 
 #include "character.h"
 
-struct character *createCharacter() {
+struct character *createCharacter(char skin) {
   struct character *newCharacter = malloc(sizeof(struct character));
 
+  newCharacter->skin = skin;
   newCharacter->mealsDelivered = 0;
   newCharacter->lifes = 5;
+  
   newCharacter->score = 0;
 
   newCharacter->meal = newMeal();

@@ -6,9 +6,35 @@
 #include "screen.h"
 
 struct game *createGame(char *mapPath) {
+  initscr();
+  keypad(stdscr, TRUE);
+  noecho();
+  curs_set(0);
+
+  // Random seed
+  srand(clock());
+
+  // -1 = single-player
+  //  1 = co-op
+  int mode = -1;
+  printMode(mode);
+
+  int inputMode = getch();
+  while(inputMode != ' ') {
+    if (inputMode == KEY_DOWN || inputMode == KEY_UP) {
+      mode = mode * -1;
+      printMode(mode);
+    }
+    inputMode = getch();
+  }
+
   struct game *newGame = malloc(sizeof *newGame);
   newGame->map = createMap(mapPath);
-  newGame->character = createCharacter();
+  newGame->character = createCharacter('&');
+  newGame->totalCharacters = mode == -1 ? 1 : 2;
+  if (mode == 1) {
+    newGame->character2 = createCharacter('$');
+  }
   newGame->orders = createOrderQueue();
   newGame->maxTime = 25;
   newGame->timeLeft = 25;
@@ -19,7 +45,7 @@ struct game *createGame(char *mapPath) {
 
 void refreshScreen(struct game *game) {
   erase();
-  printScore(game->character, game->timeLeft);
+  printScore(game->character->lifes, game->character, game->timeLeft);
   printMap(game->map);
   printCharacterMeal(game->character);
   printRecipes();
@@ -28,21 +54,30 @@ void refreshScreen(struct game *game) {
 }
 
 int initGame(struct game *game) {
-  initscr();
-  keypad(stdscr, TRUE);
-  noecho();
-  curs_set(0);
 
-  int maxX = game->map->maxX;
-  int maxY = game->map->maxY;
+  struct map* map = game->map;
+  int maxX = map->maxX;
+  int maxY = map->maxY;
 
-  for (int i = 0; i < maxY; i++) {
-    for (int j = 0; j < maxX; j++) {
-      if (game->map->matrix[i][j] == '&') {
-        game->character->posX = j;
-        game->character->posY = i;
-      }
-    }
+  int x, y;
+  do {
+      x = rand() % (maxX - 1);
+      y = rand() % (maxY - 1);
+  } while (map->matrix[y][x] != ' ');
+
+  map->matrix[y][x] = '&';
+  game->character->posX = x;
+  game->character->posY = y;
+
+  if (game->totalCharacters == 2)  {
+    do {
+        x = rand() % (maxX - 1);
+        y = rand() % (maxY - 1);
+    } while (map->matrix[y][x] != ' ');
+
+    map->matrix[y][x] = '$';
+    game->character2->posX = x;
+    game->character2->posY = y;
   }
 
   printWelcome();
@@ -73,8 +108,10 @@ int handleCollision(struct game *game, char nextPosition) {
   case '-':
     return 1;
   case '@':
-    if (character->meal->size > 0 && deliverMeal(character, orders))
-      game->startTime = game->startTime + (15*CLOCKS_PER_SEC);
+    if (character->meal->size > 0 && deliverMeal(character, orders)) {
+      int addSecs = game->totalCharacters == 2 ? 7*CLOCKS_PER_SEC : 15*CLOCKS_PER_SEC;
+      game->startTime = game->startTime + addSecs;
+    }
     return 1;
   case 'o':
     trashMeal(character);
@@ -105,9 +142,11 @@ int handleCollision(struct game *game, char nextPosition) {
   }
 }
 
-void handleInput(struct game *game, int userInput) {
-  int posX = game->character->posX;
-  int posY = game->character->posY;
+void handleInput(struct game *game, struct character *character,
+                 int userInput) {
+  int posX = character->posX;
+  int posY = character->posY;
+  char charSkin = character->skin;
 
   switch (userInput) {
   case 'W':
@@ -115,8 +154,8 @@ void handleInput(struct game *game, int userInput) {
   case KEY_UP:
     if (!handleCollision(game, game->map->matrix[posY - 1][posX])) {
       game->map->matrix[posY][posX] = ' ';
-      game->map->matrix[posY - 1][posX] = '&';
-      game->character->posY--;
+      game->map->matrix[posY - 1][posX] = charSkin;
+      character->posY--;
     }
     break;
   case 'A':
@@ -124,8 +163,8 @@ void handleInput(struct game *game, int userInput) {
   case KEY_LEFT:
     if (!handleCollision(game, game->map->matrix[posY][posX - 1])) {
       game->map->matrix[posY][posX] = ' ';
-      game->map->matrix[posY][posX - 1] = '&';
-      game->character->posX--;
+      game->map->matrix[posY][posX - 1] = charSkin;
+      character->posX--;
     }
     break;
   case 'S':
@@ -133,8 +172,8 @@ void handleInput(struct game *game, int userInput) {
   case KEY_DOWN:
     if (!handleCollision(game, game->map->matrix[posY + 1][posX])) {
       game->map->matrix[posY][posX] = ' ';
-      game->map->matrix[posY + 1][posX] = '&';
-      game->character->posY++;
+      game->map->matrix[posY + 1][posX] = charSkin;
+      character->posY++;
     }
     break;
   case 'D':
@@ -142,8 +181,8 @@ void handleInput(struct game *game, int userInput) {
   case KEY_RIGHT:
     if (!handleCollision(game, game->map->matrix[posY][posX + 1])) {
       game->map->matrix[posY][posX] = ' ';
-      game->map->matrix[posY][posX + 1] = '&';
-      game->character->posX++;
+      game->map->matrix[posY][posX + 1] = charSkin;
+      character->posX++;
     }
     break;
   }
@@ -157,11 +196,18 @@ int runGame(struct game *game) {
 
   timeout(0);
   while (userInput != 'q' && game->character->lifes > 0 && game->timeLeft > 0) {
-    handleInput(game, userInput);
+
+    if (game->totalCharacters == 2 &&
+        (userInput == KEY_UP || userInput == KEY_DOWN ||
+         userInput == KEY_LEFT || userInput == KEY_RIGHT)) {
+      handleInput(game, game->character2, userInput);
+    } else {
+      handleInput(game, game->character, userInput);
+    }
 
     if (game->orders->size == 0) {
       populateOrderQueue(game->orders, 5);
-      game->maxTime -= 3;
+      game->maxTime -= game->totalCharacters == 2 ? 3 : 5;
     }
 
     clock_t currentTime = clock();
@@ -187,6 +233,8 @@ int endGame(struct game *game) {
 
   endMap(game->map);
   endCharacter(game->character);
+  if (game->totalCharacters == 2)
+    endCharacter(game->character2);
   endOrders(game->orders);
 
   free(game);

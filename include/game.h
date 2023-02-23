@@ -9,7 +9,9 @@
 struct game {
   struct map *map;
   struct character *character;
+  struct character *character2;
   struct orderQueue *orders;
+  int totalCharacters;
   int startTime;
   int maxTime;
   int timeLeft;

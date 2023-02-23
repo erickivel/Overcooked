@@ -3,9 +3,11 @@
 #ifndef SCREEN_H
 #define SCREEN_H
 
+void printMode(int mode);
+
 void printWelcome();
 
-void printScore(struct character *character, int time);
+void printScore(int lifes, struct character *character, int time);
 
 void printMap(struct map *map);
 
