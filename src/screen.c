@@ -109,9 +109,14 @@ void printEndGame(struct game *game) {
   printw("Score: %d\n", game->character->score);
   printw("Meals successfully delivered: %d\n", game->character->mealsDelivered);
 
-  printw("\nPress any key to leave the game\n");
+  printw("\nPress SPACE to leave the game\n");
 
   refresh();
 
-  getch();
+  char input;
+
+  do {
+   input = getch();
+  } while (input != ' ');
+
 }
