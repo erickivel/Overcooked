@@ -1,4 +1,4 @@
-#include "game.h"
+#include "../include/game.h"
 
 int main(int argc, char **argv) {
   char *mapPath = argc == 1 ? "maps/map.txt" : argv[1];

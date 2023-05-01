@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "game.h"
-#include "screen.h"
+#include "../include/game.h"
+#include "../include/screen.h"
 
 struct game *createGame(char *mapPath) {
   initscr();
@@ -20,7 +20,7 @@ struct game *createGame(char *mapPath) {
   printMode(mode);
 
   int inputMode = getch();
-  while(inputMode != ' ') {
+  while (inputMode != ' ') {
     if (inputMode == KEY_DOWN || inputMode == KEY_UP) {
       mode = mode * -1;
       printMode(mode);
@@ -55,24 +55,24 @@ void refreshScreen(struct game *game) {
 
 int initGame(struct game *game) {
 
-  struct map* map = game->map;
+  struct map *map = game->map;
   int maxX = map->maxX;
   int maxY = map->maxY;
 
   int x, y;
   do {
-      x = rand() % (maxX - 1);
-      y = rand() % (maxY - 1);
+    x = rand() % (maxX - 1);
+    y = rand() % (maxY - 1);
   } while (map->matrix[y][x] != ' ');
 
   map->matrix[y][x] = '&';
   game->character->posX = x;
   game->character->posY = y;
 
-  if (game->totalCharacters == 2)  {
+  if (game->totalCharacters == 2) {
     do {
-        x = rand() % (maxX - 1);
-        y = rand() % (maxY - 1);
+      x = rand() % (maxX - 1);
+      y = rand() % (maxY - 1);
     } while (map->matrix[y][x] != ' ');
 
     map->matrix[y][x] = '$';
@@ -109,7 +109,8 @@ int handleCollision(struct game *game, char nextPosition) {
     return 1;
   case '@':
     if (character->meal->size > 0 && deliverMeal(character, orders)) {
-      int addSecs = game->totalCharacters == 2 ? 7*CLOCKS_PER_SEC : 15*CLOCKS_PER_SEC;
+      int addSecs =
+          game->totalCharacters == 2 ? 7 * CLOCKS_PER_SEC : 15 * CLOCKS_PER_SEC;
       game->startTime = game->startTime + addSecs;
     }
     return 1;

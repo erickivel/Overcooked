@@ -1,6 +1,6 @@
 #include <ncurses.h>
 
-#include "screen.h"
+#include "../include/screen.h"
 
 void printMode(int mode) {
   erase();
@@ -30,8 +30,7 @@ void printWelcome() {
 
 void printScore(int lifes, struct character *character, int time) {
   printw("\n");
-  printw("Lifes: %d    Score: %d  Time: %d s", lifes,
-         character->score, time);
+  printw("Lives: %d    Score: %d  Time: %d s", lifes, character->score, time);
   printw("\n\n");
 }
 
@@ -64,9 +63,9 @@ void printCharacterMeal(struct character *character) {
   printw("\n\n");
 }
 
-char mealNames[6][12] = {
-    {"X-burguer"}, {"X-salada"},    {"Combo 1"},
-    {"Combo 2"},   {"Vegetariano"}, {"Vegano"},
+char mealNames[6][20] = {
+    {"Cheeseburguer"}, {"Cheeseburguer salad"}, {"Combo 1"},
+    {"Combo 2"},       {"Vegetarian"},          {"Vegan"},
 };
 
 void printOrders(struct orderQueue *queue) {
@@ -87,12 +86,12 @@ void printOrders(struct orderQueue *queue) {
 
 void printRecipes() {
   printw("Recipes:\n");
-  printw("X-burguer:  [p] [H] [Q] [P]\n");
-  printw("X-salada    [p] [H] [S] [P]\n");
-  printw("Combo 1     [p] [H] [Q] [P] [F] [R]\n");
-  printw("Combo 2     [p] [H] [S] [P] [F] [R]\n");
-  printw("Vegetariano [p] [Q] [P] [F] [R]\n");
-  printw("Vegano      [S] [F] [R]\n");
+  printw("Cheeseburguer:       [p] [H] [Q] [P]\n");
+  printw("Cheeseburguer salad  [p] [H] [S] [P]\n");
+  printw("Combo 1              [p] [H] [Q] [P] [F] [R]\n");
+  printw("Combo 2              [p] [H] [S] [P] [F] [R]\n");
+  printw("Vegetarian           [p] [Q] [P] [F] [R]\n");
+  printw("Vegan                [S] [F] [R]\n");
   printw("\n");
 }
 
@@ -115,7 +114,6 @@ void printEndGame(struct game *game) {
   char input;
 
   do {
-   input = getch();
+    input = getch();
   } while (input != ' ');
-
 }
