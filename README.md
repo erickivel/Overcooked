@@ -10,7 +10,9 @@ This project was developed as a college assignment" for the Programming I subjec
 Written in c the game is based on Overcooked, a co-op cooking game.
 
 <p align="center" >
-  <img src="./GitAssets/gameDemo.mp4" alt="overcooked video demo"  style="align: center"/>
+  
+  https://user-images.githubusercontent.com/68995946/235532010-ad4acc2d-6dfd-4673-99bf-eb71efc9e8d0.mp4
+  
 </p>
 
 ## :rocket: How to run the game
